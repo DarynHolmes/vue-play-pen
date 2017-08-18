@@ -1,42 +1,56 @@
 <template>
   <div class="outer-cell">
-    <div v-if="!hasFocus" tabindex="0"  @focus="onFocus" class="value-cell">{{ text }}</div>
-    <input v-else tabindex="0" type="text" @focusout="onFocusOut" :value="text" ref="editor"></input>
+    <div v-if="!isEditing" tabindex="0" v-on:keypress="beginEditing" @dblclick="continueEditing" class="value-cell" >{{ localValue }}</div>
+    <input v-else tabindex="0" type="text" @focusout="onFocusout" v-model="localValue" ref="editor"></input>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
 
-// const States = Object.freeze({
-//     DEFAULT:  Symbol('default'),
-//     SELECT:   Symbol('select'),
-//     EDIT:     Symbol('edit')
-// });
+const States = Object.freeze({
+  DEFAULT: Symbol('default'),
+  SELECTED: Symbol('selected'),
+  EDITING: Symbol('editing')
+})
 
 export default {
   props: {
-    text: {
+    value: {
       type: [Number, String],
       required: true
     }
   },
   data () {
     return {
-      hasFocus: false
+      state: States.DEFAULT,
+      localValue: this.value
+    }
+  },
+  computed: {
+    isEditing () {
+      return this.state === States.EDITING
     }
   },
   methods: {
-    onFocus () {
-      console.log('Focusing...')
-      this.hasFocus = true
+    onFocusout (event) {
+      // console.log(this.localValue)
+      this.$emit('input', this.localValue)
+      this.state = States.DEFAULT
+    },
+    beginEditing () {
+      console.log('editing')
+      this.state = States.EDITING
+      this.localValue = ''
       Vue.nextTick(() => {
         this.$refs.editor.focus()
       })
     },
-    onFocusOut () {
-      console.log('Bluring...')
-      this.hasFocus = false
+    continueEditing () {
+      this.state = States.EDITING
+      Vue.nextTick(() => {
+        this.$refs.editor.focus()
+      })
     }
   }
 }
@@ -46,6 +60,7 @@ export default {
 .outer-cell {
   height: 40px;
   width: 200px;
+  user-select: none;
 }
 
 .value-cell {
@@ -58,11 +73,11 @@ export default {
 }
 input {
   text-align: center;
-  
+  color: #444;
   width: 100%;
   height: 100%;
   background-color:  #f9f9f9;
-
+  border: 1px solid;
   font-family: Helvetica Neue, Arial, sans-serif;
   font-size: 14px;
 }

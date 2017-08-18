@@ -3,7 +3,8 @@
     <grid 
       :data="gridData"
       :columns="gridColumns"
-      :filter-key="searchQuery">
+      :filter-key="searchQuery"
+      @input="onInput">
     </grid>
   </div>
 </template>
@@ -21,11 +22,18 @@ export default {
       searchQuery: '',
       gridColumns: ['name', 'power'],
       gridData: [
-        { name: 'Chuck Norris', power: Infinity },
-        { name: 'Bruce Lee', power: 9000 },
-        { name: 'Jackie Chan', power: 7000 },
-        { name: 'Jet Li', power: 8000 }
+        { id: 100, name: 'Chuck Norris', power: Infinity },
+        { id: 101, name: 'Bruce Lee', power: 9000 },
+        { id: 102, name: 'Jackie Chan', power: 7000 },
+        { id: 103, name: 'Jet Li', power: 8000 }
       ]
+    }
+  },
+  methods: {
+    onInput (event) {
+      const item = this.gridData.find(item => item.id === event.id)
+      Object.assign(item, event.value)
+      console.log(this.gridData)
     }
   }
 }

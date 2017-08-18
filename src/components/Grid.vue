@@ -15,7 +15,7 @@
     <tbody>
       <tr v-for="(entry, dataIndex) in filteredData" :key="dataIndex">
         <td  v-for="(key, colIndex) in columns" :key="colIndex">
-          <basic-cell :text="entry[key]"></basic-cell>
+          <basic-cell :value="entry[key]" @input="(val) => onInput({id: entry.id, value: {[key]: val}})"></basic-cell>
         </td>
       </tr>
     </tbody>
@@ -77,6 +77,9 @@ export default {
     sortBy: function (key) {
       this.sortKey = key
       this.sortOrders[key] = this.sortOrders[key] * -1
+    },
+    onInput (val) {
+      this.$emit('input', val)
     }
   }
 }

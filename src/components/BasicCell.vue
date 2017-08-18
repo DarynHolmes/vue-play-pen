@@ -1,7 +1,7 @@
 <template>
   <div class="outer-cell">
-    <div v-if="!isEditing" tabindex="0" v-on:keypress="beginEditing" @dblclick="continueEditing" class="value-cell" >{{ localValue }}</div>
-    <input v-else tabindex="0" type="text" @focusout="onFocusout" v-model="localValue" ref="editor"></input>
+    <div v-if="!isEditing" tabindex="0" v-on:keypress="beginEditing" @dblclick="continueEditing" class="value-cell" ref="block">{{ localValue }}</div>
+    <input v-else tabindex="0" type="text" @focusout="onFocusout" v-on:keypress.enter="endEditing" v-model="localValue" ref="editor"></input>
   </div>
 </template>
 
@@ -50,6 +50,12 @@ export default {
       this.state = States.EDITING
       Vue.nextTick(() => {
         this.$refs.editor.focus()
+      })
+    },
+    endEditing () {
+      this.state = States.DEFAULT
+      Vue.nextTick(() => {
+        this.$refs.block.focus()
       })
     }
   }
